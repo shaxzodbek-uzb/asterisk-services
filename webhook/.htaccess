@@ -1,0 +1,51 @@
+# Asterisk Webhook Security Configuration
+
+# Enable error logging but don't display errors
+php_flag display_errors Off
+php_flag log_errors On
+
+# Security headers
+Header always set X-Content-Type-Options nosniff
+Header always set X-Frame-Options DENY
+Header always set X-XSS-Protection "1; mode=block"
+
+# Protect config and log files
+<Files "*.log">
+    Require all denied
+</Files>
+
+<Files "*-config.php">
+    Require all denied
+</Files>
+
+<Files ".env">
+    Require all denied
+</Files>
+
+# Optional: Restrict access to specific IPs (uncomment and modify as needed)
+# <RequireAll>
+#     Require ip 127.0.0.1
+#     Require ip 192.168.1.0/24
+#     Require ip YOUR_SERVER_IP
+# </RequireAll>
+
+# Enable compression for better performance
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+</IfModule>
+
+# Cache static assets
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+</IfModule>
+
+# Increase upload limits for audio files (adjust as needed)
+php_value upload_max_filesize 50M
+php_value post_max_size 50M
+php_value max_execution_time 300
+php_value max_input_time 300
