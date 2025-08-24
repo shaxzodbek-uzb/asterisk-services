@@ -1,0 +1,24 @@
+# Credentials and config files
+config.env
+*.env
+
+# Build outputs
+ami-webhook-forwarder
+*.exe
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Editor specific
+.vscode/
+.idea/
+*.swp
+*.swo
