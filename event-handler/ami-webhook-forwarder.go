@@ -196,7 +196,7 @@ func parseAMIEvent(eventText string) (string, map[string]interface{}) {
 }
 
 func handleAMIEvents(conn net.Conn, config *AMIConfig) {
-	log.Println("Starting AMI event handler - listening for ALL Asterisk events...")
+	log.Println("Starting AMI event handler - listening for call events: calling, answering, hangup...")
 	reader := bufio.NewReader(conn)
 	eventCount := 0
 	lastHeartbeat := time.Now()
@@ -264,31 +264,26 @@ func handleAMIEvents(conn net.Conn, config *AMIConfig) {
 }
 
 func shouldProcessEvent(eventType string) bool {
-	// Process all call-related events
-	callEvents := []string{
-		"Newchannel", "Hangup", "DialBegin", "DialEnd", "Bridge", "Unbridge",
-		"NewCallerid", "NewAccountCode", "NewExten", "NewState", "Dial",
-		"AgentCalled", "AgentConnect", "QueueMemberAdded", "QueueMemberRemoved",
-		"Hold", "Unhold", "MusicOnHoldStart", "MusicOnHoldStop", "Transfer",
-		"AttendedTransfer", "BlindTransfer", "DTMF", "VoicemailUserEntry",
-		"CEL", "CDR", "LocalBridge", "LocalOptimizationBegin", "LocalOptimizationEnd",
-		"OriginateResponse", "ChannelTalkingStart", "ChannelTalkingStop",
-		"BridgeCreate", "BridgeDestroy", "BridgeEnter", "BridgeLeave",
-		"VarSet", "UserEvent", "Registry", "PeerStatus", "ContactStatus",
+	// Process only specific call events: calling, answering, hangup
+	switch eventType {
+	case "Newchannel":    // New call initiated (calling)
+		return true
+	case "DialBegin":     // Outbound call started (calling)
+		return true
+	case "DialEnd":       // Call answered or failed (get call to answer)
+		return true
+	case "Bridge":        // Channels connected (call answered)
+		return true
+	case "Hangup":        // Call terminated (hangup)
+		return true
+	default:
+		return false
 	}
-	
-	for _, event := range callEvents {
-		if eventType == event {
-			return true
-		}
-	}
-	
-	return false
 }
 
 func main() {
 	log.Println("Starting Asterisk AMI Webhook Forwarder...")
-	log.Println("This will capture ALL call events without needing dialplan changes!")
+	log.Println("This will capture call events: calling, answering, and hangup")
 
 	// Load configuration
 	config := loadAMIConfig()

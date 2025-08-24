@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# Run script for AMI-based webhook forwarder
-# This captures ALL call events without needing dialplan changes!
+# Run script for AMI-based webhook forwarder  
+# This captures specific call events: calling, answering, hangup
 
 echo "🚀 Starting AMI-based Asterisk Webhook Forwarder"
 echo "==============================================="
+echo "📞 Will capture: calling, answering, hangup events"
 
 # Check if config.env exists
 if [ ! -f "config.env" ]; then
